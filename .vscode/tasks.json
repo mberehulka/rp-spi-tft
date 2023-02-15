@@ -3,9 +3,34 @@
     "tasks": [
         {
             "label": "A",
-            "command": "cargo run --release",
+            "command": "cargo run --example display --release",
             "type": "shell",
             "args": [],
+            "presentation": {
+                "reveal": "always",
+                "clear": true,
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "B",
+            "command": "cargo build --example display --release",
+            "type": "shell",
+            "args": [],
+            "presentation": {
+                "reveal": "always",
+                "clear": true,
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "C",
+            "command": "bash",
+            "type": "shell",
+            "args": [
+                "-c",
+                "cd ./font_builder/ && cargo run --release"
+            ],
             "presentation": {
                 "reveal": "always",
                 "clear": true,

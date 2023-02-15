@@ -1,0 +1,20 @@
+[[example]]
+name = "display"
+path = "./src/display.rs"
+
+[package]
+name = "rp-spi-tft-examples"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+embedded-hal = { workspace = true }
+rp2040-hal = { workspace = true }
+cortex-m = { workspace = true }
+fugit = { workspace = true }
+
+cortex-m-rt = "0.7.3"
+panic-halt = "0.2.0"
+rp2040-boot2 = "0.2.1"
+
+rp-spi-tft = { path = "../core" }
