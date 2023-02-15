@@ -1,0 +1,16 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "A",
+            "command": "cargo run --release",
+            "type": "shell",
+            "args": [],
+            "presentation": {
+                "reveal": "always",
+                "clear": true,
+                "panel": "shared"
+            }
+        }
+    ]
+}

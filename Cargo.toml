@@ -1,0 +1,14 @@
+[package]
+name = "rp_pc_monitor"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rp2040-hal = "0.7.0"
+cortex-m = "0.7.7"
+cortex-m-rt = "0.7.3"
+embedded-hal = { version = "0.2.7", features = [] }
+panic-halt = "0.2.0"
+rp2040-boot2 = "0.2.1"
+
+[dev-dependencies]
