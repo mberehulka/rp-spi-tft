@@ -2,6 +2,10 @@
 name = "display"
 path = "./src/display.rs"
 
+[[example]]
+name = "terminal"
+path = "./src/terminal.rs"
+
 [package]
 name = "rp-spi-tft-examples"
 version = "0.1.0"
@@ -15,6 +19,10 @@ fugit = { workspace = true }
 
 cortex-m-rt = "0.7.3"
 panic-halt = "0.2.0"
-rp2040-boot2 = "0.2.1"
+rp-pico = "0.6.0"
+
+usb-device = "0.2.9"
+usbd-serial = "0.1.1"
+usbd-hid = "0.6.1"
 
 rp-spi-tft = { path = "../core" }

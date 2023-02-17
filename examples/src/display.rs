@@ -1,25 +1,25 @@
-#![no_std]
-#![no_main]
-
-#[link_section = ".boot2"] #[used]
-pub static BOOT2: [u8; 256] = rp2040_boot2::BOOT_LOADER_GENERIC_03H;
+#![no_std] #![no_main]
+use rp_pico as _;
+use panic_halt as _;
 
 use core::fmt::Write;
 
-use panic_halt as _;
+mod assets;
 
 #[rp2040_hal::entry]
 fn main() -> ! {
     let mut d = rp_spi_tft::Display::default();
+    d.font = &assets::fira_code_regular_nerd_font_complete::F;
+    d.color = rp_spi_tft::Color::BLACK;
 
-    let mut counter = 0;
+    let mut sprite_anim = rp_spi_tft::SpriteAnimation::new(&assets::naruto_jiraya::S);
 
     loop {
-        d.clear();
+        d.reset_cursor();
 
-        write!(d, "Hello World ! {}\nTest", counter);
+        d.draw_sprite_anim(&mut sprite_anim, 0, 0);
 
-        counter += 1;
+        write!(d, "Hello World !").ok();
 
         d.draw();
     }

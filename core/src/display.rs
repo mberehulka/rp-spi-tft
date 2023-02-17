@@ -2,22 +2,20 @@ use embedded_hal::{blocking::delay::DelayMs, digital::v2::OutputPin, prelude::_e
 use rp2040_hal::{spi::{Enabled, SpiDevice}, gpio::{Output, PushPull, Pin, PinId, bank0}, Spi, Clock, pac::SPI0};
 use fugit::RateExtU32;
 
-use crate::{Instruction, Orientation, Color};
+use crate::{Instruction, Orientation, Color, Font, EMPTY_FONT};
 
 pub struct Display<const W: usize, const H: usize, SPID: SpiDevice, RST: PinId, DC: PinId, LED: PinId> {
     spi: rp2040_hal::Spi<Enabled, SPID, 8>,
     rst: Pin<RST, Output<PushPull>>,
     dc: Pin<DC, Output<PushPull>>,
-    led: Pin<LED, Output<PushPull>>,
+    pub led: Pin<LED, Output<PushPull>>,
     pub data: [[u16;W];H],
     pub color: Color,
 
-    #[cfg(feature="text")]
     pub letter_space: isize,
-    #[cfg(feature="text")]
     pub letter_cursor: [isize;2],
-    #[cfg(feature="text")]
-    pub line_height: isize
+    pub line_height: isize,
+    pub font: &'static Font
 }
 impl<const W: usize, const H: usize, SPID: SpiDevice, RST: PinId, DC: PinId, LED: PinId> Display<W, H, SPID, RST, DC, LED> {
     pub fn new(
@@ -26,17 +24,16 @@ impl<const W: usize, const H: usize, SPID: SpiDevice, RST: PinId, DC: PinId, LED
         dc: Pin<DC, Output<PushPull>>,
         led: Pin<LED, Output<PushPull>>
     ) -> Self {
+        let color = Color::WHITE;
         Self {
             spi, rst, dc, led,
             data: [[0; W];H],
-            color: Color::new(1., 1., 1.),
+            color,
 
-            #[cfg(feature="text")]
             letter_space: 1,
-            #[cfg(feature="text")]
             letter_cursor: [0, 0],
-            #[cfg(feature="text")]
-            line_height: -5
+            line_height: 0,
+            font: &EMPTY_FONT
         }
     }
     pub fn init(&mut self, delay: &mut impl DelayMs<u8>) {
@@ -98,27 +95,15 @@ impl<const W: usize, const H: usize, SPID: SpiDevice, RST: PinId, DC: PinId, LED
     pub fn set_orientation(&mut self, orientation: Orientation) {
         self.write_command(Instruction::MADCTL, &[orientation as u8]);
     }
-    pub fn set_led_high(&mut self) {
-        self.led.set_high().unwrap();
-    }
-    pub fn set_led_low(&mut self) {
-        self.led.set_low().unwrap();
-    }
-    #[cfg(feature="text")]
-    pub fn clear(&mut self) {
+    pub fn reset_cursor(&mut self) {
         self.letter_cursor[0] = 0;
         self.letter_cursor[1] = self.line_height;
-        for y in 0..H {
-            for x in 0..W {
-                self.data[y][x] = 0;
-            }
-        }
     }
-    #[cfg(not(feature="text"))]
     pub fn clear(&mut self) {
+        self.reset_cursor();
         for y in 0..H {
             for x in 0..W {
-                self.data[y][x] = 0;
+                self.data[y][x] = 0
             }
         }
     }
@@ -132,13 +117,24 @@ impl<const W: usize, const H: usize, SPID: SpiDevice, RST: PinId, DC: PinId, LED
             }
         }
     }
-    #[inline(never)]
+
+    #[inline(always)]
     pub fn draw_pixel(&mut self, x: isize, y: isize) {
         if x >= W as isize || x < 0 || y >= H as isize || y < 0 { return }
-        self.data[y as usize][x as usize] = self.color.brightness[255]
+        self.data[y as usize][x as usize] = self.color.c
     }
-    pub fn set_color(&mut self, color: Color) {
-        self.color = color;
+    #[inline(always)]
+    pub fn draw_pixel_blend(&mut self, x: isize, y: isize, a: f32) {
+        if x >= W as isize || x < 0 || y >= H as isize || y < 0 { return }
+        let mut color = Color::from_565(self.data[y as usize][x as usize]);
+        color.blend(&self.color, a);
+        self.data[y as usize][x as usize] = color.c;
+    }
+
+    #[inline(always)]
+    pub fn set_pixel_color(&mut self, x: isize, y: isize, c: u16) {
+        if x >= W as isize || x < 0 || y >= H as isize || y < 0 { return }
+        self.data[y as usize][x as usize] = c
     }
 }
 
@@ -166,7 +162,7 @@ impl Display<160, 128, SPI0, bank0::Gpio5, bank0::Gpio3, bank0::Gpio2> {
         );
         s.init(&mut delay);
         s.set_orientation(Orientation::LandscapeSwapped);
-        s.set_led_high();
+        s.led.set_high().unwrap();
         s.led.set_drive_strength(rp2040_hal::gpio::OutputDriveStrength::TwoMilliAmps);
         s
     }

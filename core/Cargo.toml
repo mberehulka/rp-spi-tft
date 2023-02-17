@@ -8,8 +8,3 @@ embedded-hal = { workspace = true }
 rp2040-hal = { workspace = true }
 cortex-m = { workspace = true }
 fugit = { workspace = true }
-
-[features]
-default = ["2d", "text"]
-2d = []
-text = []

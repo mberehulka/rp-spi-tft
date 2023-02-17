@@ -3,7 +3,7 @@
     "tasks": [
         {
             "label": "A",
-            "command": "cargo run --example display --release",
+            "command": "cargo run --example terminal --release",
             "type": "shell",
             "args": [],
             "presentation": {
@@ -14,7 +14,7 @@
         },
         {
             "label": "B",
-            "command": "cargo build --example display --release",
+            "command": "cargo build --example terminal --release",
             "type": "shell",
             "args": [],
             "presentation": {
@@ -25,17 +25,14 @@
         },
         {
             "label": "C",
-            "command": "bash",
+            "command": "cargo run --example display --release",
             "type": "shell",
-            "args": [
-                "-c",
-                "cd ./font_builder/ && cargo run --release"
-            ],
+            "args": [],
             "presentation": {
                 "reveal": "always",
                 "clear": true,
                 "panel": "shared"
             }
-        }
+        },
     ]
 }
