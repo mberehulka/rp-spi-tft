@@ -23,12 +23,15 @@ impl<const W: usize, const H: usize, SPID: SpiDevice, RST: PinId, DC: PinId, LED
             _ => {
                 let (letter_width, data) = (self.font.data)(c);
                 for pixel in data {
-                    let x = ((pixel & 0b11111_00000_000000) >> 11) as isize + self.letter_cursor[0];
-                    let y = ((pixel & 0b00000_11111_000000) >> 6) as isize + self.letter_cursor[1];
+                    let x = ((pixel & 0b11111_00000_000000) >> 11) as isize + self.letter_cursor[0] + self.letter_padding[0];
+                    let y = ((pixel & 0b00000_11111_000000) >> 6) as isize + self.letter_cursor[1] + self.letter_padding[1];
                     let a = (pixel & 0b00000_00000_111111) as f32 / 64.;
                     self.draw_pixel_blend(x, y, a);
                 }
                 self.letter_cursor[0] += self.letter_space + letter_width as isize;
+                if c == ' ' {
+                    self.letter_cursor[0] += self.word_space
+                }
             }
         }
     }

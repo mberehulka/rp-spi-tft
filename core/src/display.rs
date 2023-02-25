@@ -14,6 +14,8 @@ pub struct Display<const W: usize, const H: usize, SPID: SpiDevice, RST: PinId, 
 
     pub letter_space: isize,
     pub letter_cursor: [isize;2],
+    pub letter_padding: [isize;2],
+    pub word_space: isize,
     pub line_height: isize,
     pub font: &'static Font
 }
@@ -32,6 +34,8 @@ impl<const W: usize, const H: usize, SPID: SpiDevice, RST: PinId, DC: PinId, LED
 
             letter_space: 1,
             letter_cursor: [0, 0],
+            letter_padding: [0, 0],
+            word_space: 0,
             line_height: 0,
             font: &EMPTY_FONT
         }

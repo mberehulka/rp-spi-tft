@@ -64,12 +64,15 @@ fn main() -> ! {
         pins.gpio2.into_push_pull_output()   // led
     );
     d.init(&mut delay);
-    d.set_orientation(Orientation::LandscapeSwapped);
+    d.set_orientation(Orientation::Landscape);
     d.led.set_high().unwrap();
     d.led.set_drive_strength(rp2040_hal::gpio::OutputDriveStrength::TwoMilliAmps);
     d.font = &assets::fira_code_regular_nerd_font_complete::F;
     d.color = rp_spi_tft::Color::WHITE;
-
+    d.letter_padding = [5, 5];
+    d.word_space = -2;
+    d.line_height = 3;
+    
     let mut terminal_buff = SerialBuff::new();
     loop {
         d.clear();
@@ -102,10 +105,9 @@ fn USBCTRL_IRQ() {
 
                 let mut serial_buff = unsafe { SERIAL_BUFF.lock() };
 
-                if data == b"cls" { // clear terminal
-                    serial_buff.length = 0;
-                } else {
-                    for d in data {
+                match data {
+                    b"cls" => serial_buff.length = 0,
+                    _ => for d in data {
                         serial_buff.append_data(*d)
                     }
                 }
