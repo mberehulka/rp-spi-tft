@@ -154,14 +154,14 @@ impl Display<160, 128, SPI0, bank0::Gpio5, bank0::Gpio3, bank0::Gpio2> {
         let pins = rp2040_hal::gpio::Pins::new(
             pac.IO_BANK0, pac.PADS_BANK0, rp2040_hal::Sio::new(pac.SIO).gpio_bank0, &mut pac.RESETS);
 
-        let _spi_sclk = pins.gpio6.into_mode::<rp2040_hal::gpio::FunctionSpi>();
-        let _spi_mosi = pins.gpio7.into_mode::<rp2040_hal::gpio::FunctionSpi>();
+        let _spi_sclk = pins.gpio6.into_mode::<rp2040_hal::gpio::FunctionSpi>(); // sck
+        let _spi_mosi = pins.gpio7.into_mode::<rp2040_hal::gpio::FunctionSpi>(); // sda
         let _spi_miso = pins.gpio4.into_mode::<rp2040_hal::gpio::FunctionSpi>();
         let mut s = Self::new(
             rp2040_hal::Spi::<_, _, 8>::new(pac.SPI0).init(
                 &mut pac.RESETS, clocks.peripheral_clock.freq(), 16.MHz(), &embedded_hal::spi::MODE_0),
-            pins.gpio5.into_push_pull_output(),  // rst
-            pins.gpio3.into_push_pull_output(),  // dc
+            pins.gpio5.into_push_pull_output(),  // reset
+            pins.gpio3.into_push_pull_output(),  // dc / a0
             pins.gpio2.into_push_pull_output()   // led
         );
         s.init(&mut delay);
