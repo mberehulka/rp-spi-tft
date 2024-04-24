@@ -8,8 +8,3 @@ Pure Rust Raspberry PI Pico library for TFT Displays with SPI Interface
 - [x] image
 - [x] gif
 - [x] text
-- [ ] complex 2d shapes
-- [ ] image with indexing
-- [ ] gif with indexing
-- [ ] 3d rasterization
-- [ ] raytracing ( who knows :P )
